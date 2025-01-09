@@ -17,12 +17,11 @@ import java.sql.ResultSet;
 
 /**
  *
- * @author LENOVO
+ * @author aulia marwah kandari
  */
 
 
 public class MenuRestaurant extends javax.swing.JInternalFrame {
-    // Variabel deklarasi lainnya...
     private final DefaultTableModel model;
 
     public MenuRestaurant() {
@@ -37,9 +36,8 @@ public class MenuRestaurant extends javax.swing.JInternalFrame {
 
     private void loadData() {
     try {
-        // Kosongkan tabel sebelum menambahkan data baru
-        model.setRowCount(0);  // Hapus semua baris sebelumnya
-        try ( // Koneksi ke database MySQL
+        model.setRowCount(0);  
+        try ( 
                 Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/restoran", "root", "root")) {
             String query = "SELECT * FROM menu";
             PreparedStatement pst = conn.prepareStatement(query);
@@ -52,7 +50,7 @@ public class MenuRestaurant extends javax.swing.JInternalFrame {
                     rs.getDouble("harga"),
                     rs.getString("kategori")
                 };
-                model.addRow(row);  // Tambahkan baris ke tabel GUI
+                model.addRow(row); 
             }
         }
     } catch (SQLException e) {
@@ -212,7 +210,7 @@ public class MenuRestaurant extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     int row = tabel.getSelectedRow();
     if (row != -1) {
-        String id = (String) tabel.getValueAt(row, 0);  // Ambil ID dari baris yang dipilih
+        String id = (String) tabel.getValueAt(row, 0);  
         
         try {
             try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/restoran", "root", "root")) {
@@ -224,7 +222,7 @@ public class MenuRestaurant extends javax.swing.JInternalFrame {
                 
                 if (rowsAffected > 0) {
                     System.out.println("Data berhasil dihapus!");
-                    loadData();  // Load data setelah hapus
+                    loadData(); 
                     model.removeRow(row);
                 } else {
                     System.out.println("Gagal menghapus data!");
@@ -260,7 +258,7 @@ public class MenuRestaurant extends javax.swing.JInternalFrame {
                 
                 if (rowsAffected > 0) {
                     System.out.println("Data berhasil disimpan!");
-                    loadData();  // Load data setelah menyimpan
+                    loadData();  
                     nama_id.setText("");
                     nama_menu.setText("");
                     harga.setText("");
@@ -283,7 +281,7 @@ public class MenuRestaurant extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         int row = tabel.getSelectedRow();
     if (row != -1) {
-        String id = (String) tabel.getValueAt(row, 0);  // Ambil ID dari baris yang dipilih
+        String id = (String) tabel.getValueAt(row, 0);  
         String nama = nama_menu.getText();
         String hargaText = harga.getText();
         String kategoriText = (String) kategori.getSelectedItem();
@@ -304,7 +302,7 @@ public class MenuRestaurant extends javax.swing.JInternalFrame {
                     
                     if (rowsAffected > 0) {
                         System.out.println("Data berhasil diedit!");
-                        loadData();  // Load data setelah edit
+                        loadData();  
                         model.setValueAt(nama, row, 1);
                         model.setValueAt(hargaValue, row, 2);
                         model.setValueAt(kategoriText, row, 3);
