@@ -10,6 +10,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
+import javax.swing.JOptionPane;
 
 
 
@@ -17,7 +18,7 @@ import java.sql.ResultSet;
 
 /**
  *
- * @author aulia marwah kandari
+ * @author Aulia Marwah K
  */
 
 
@@ -34,27 +35,31 @@ public class MenuRestaurant extends javax.swing.JInternalFrame {
      * Creates new form OptionMenu
      */
 
-    private void loadData() {
+private void loadData() {
     try {
-        model.setRowCount(0);  
-        try ( 
-                Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/restoran", "root", "root")) {
-            String query = "SELECT * FROM menu";
-            PreparedStatement pst = conn.prepareStatement(query);
-            ResultSet rs = (ResultSet) pst.executeQuery();
-            
+        // Mengatur ulang jumlah baris tabel menjadi 0 sebelum memuat data baru
+        model.setRowCount(0); 
+        
+        // Membuka koneksi ke database
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/restoran", "root", "root")) {
+            String query = "SELECT * FROM menu";  // Query untuk mengambil data dari tabel 'menu'
+            PreparedStatement pst = conn.prepareStatement(query);  // Menyiapkan statement
+            ResultSet rs = pst.executeQuery();  // Menjalankan query dan mendapatkan hasilnya
+
+            // Melalui hasil query (ResultSet) dan mengisi data ke model tabel
             while (rs.next()) {
                 Object[] row = {
-                    rs.getString("id"),
-                    rs.getString("nama_menu"),
-                    rs.getDouble("harga"),
-                    rs.getString("kategori")
+                    rs.getInt("id"), // ID dari hasil query
+                    rs.getString("nama_menu"), // Nama menu
+                    rs.getDouble("harga"), // Harga
+                    rs.getString("kategori") // Kategori
                 };
-                model.addRow(row); 
+                model.addRow(row); // Menambahkan baris data ke model tabel
             }
         }
     } catch (SQLException e) {
-        System.out.println("SQL Exception: " + e.getMessage());
+        // Menampilkan pesan error jika terjadi SQL Exception
+        JOptionPane.showMessageDialog(null, "SQL Exception: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
 
@@ -70,8 +75,6 @@ public class MenuRestaurant extends javax.swing.JInternalFrame {
         btntambah = new javax.swing.JButton();
         btnedit = new javax.swing.JButton();
         btnhapus = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
-        nama_id = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         kategori = new javax.swing.JComboBox<>();
 
@@ -121,14 +124,6 @@ public class MenuRestaurant extends javax.swing.JInternalFrame {
             }
         });
 
-        jLabel3.setText("ID");
-
-        nama_id.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nama_idActionPerformed(evt);
-            }
-        });
-
         jLabel4.setText("Kategori");
 
         kategori.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "pilih", "makanan", "minuman" }));
@@ -159,25 +154,19 @@ public class MenuRestaurant extends javax.swing.JInternalFrame {
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
-                            .addComponent(jLabel3)
                             .addComponent(jLabel2)
                             .addComponent(jLabel4))
                         .addGap(80, 80, 80)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(harga, javax.swing.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE)
                             .addComponent(nama_menu, javax.swing.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE)
-                            .addComponent(nama_id)
                             .addComponent(kategori, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap(70, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(17, 17, 17)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(nama_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(48, 48, 48)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(nama_menu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -191,7 +180,7 @@ public class MenuRestaurant extends javax.swing.JInternalFrame {
                     .addComponent(kategori, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(44, 44, 44)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 69, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 72, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btntambah)
                     .addComponent(btnedit)
@@ -207,85 +196,87 @@ public class MenuRestaurant extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_nama_menuActionPerformed
 
     private void btnhapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnhapusActionPerformed
-        // TODO add your handling code here:
-    int row = tabel.getSelectedRow();
+int row = tabel.getSelectedRow();
     if (row != -1) {
-        String id = (String) tabel.getValueAt(row, 0);  
-        
+        int id = (int) tabel.getValueAt(row, 0); // Ambil ID dari tabel yang dipilih
+
         try {
             try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/restoran", "root", "root")) {
                 String query = "DELETE FROM menu WHERE id = ?";
                 PreparedStatement pst = conn.prepareStatement(query);
-                pst.setString(1, id);
-                
+                pst.setInt(1, id);
+
                 int rowsAffected = pst.executeUpdate();
-                
+
                 if (rowsAffected > 0) {
-                    System.out.println("Data berhasil dihapus!");
-                    loadData(); 
-                    model.removeRow(row);
+                    loadData();  // Memuat data setelah hapus
+                    JOptionPane.showMessageDialog(null, "Data berhasil dihapus!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    System.out.println("Gagal menghapus data!");
+                    JOptionPane.showMessageDialog(null, "Gagal menghapus data!", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         } catch (SQLException e) {
-            System.out.println("SQL Exception: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "SQL Exception: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     } else {
-        System.out.println("Pilih baris yang ingin dihapus!");
+        JOptionPane.showMessageDialog(null, "Pilih baris yang ingin dihapus!", "Peringatan", JOptionPane.WARNING_MESSAGE);
     }
     }//GEN-LAST:event_btnhapusActionPerformed
 
     private void btntambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btntambahActionPerformed
-       String id = nama_id.getText();
-    String nama = nama_menu.getText();
+String nama = nama_menu.getText();
     String hargaText = harga.getText();
     String kategoriText = (String) kategori.getSelectedItem();
 
-    if (!id.isEmpty() && !nama.isEmpty() && !hargaText.isEmpty() && !kategoriText.equals("pilih")) {
+    if (!nama.isEmpty() && !hargaText.isEmpty() && !kategoriText.equals("pilih")) {
         try {
             double hargaValue = Double.parseDouble(hargaText);
 
             try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/restoran", "root", "root")) {
-                String query = "INSERT INTO menu (id, nama_menu, harga, kategori) VALUES (?, ?, ?, ?)";
+                String query = "INSERT INTO menu (nama_menu, harga, kategori) VALUES (?, ?, ?)";
                 PreparedStatement pst = conn.prepareStatement(query);
-                pst.setString(1, id);
-                pst.setString(2, nama);
-                pst.setDouble(3, hargaValue);
-                pst.setString(4, kategoriText);
-                
+                pst.setString(1, nama);
+                pst.setDouble(2, hargaValue);
+                pst.setString(3, kategoriText);
+
                 int rowsAffected = pst.executeUpdate();
-                
+
                 if (rowsAffected > 0) {
-                    System.out.println("Data berhasil disimpan!");
-                    loadData();  
-                    nama_id.setText("");
+                    JOptionPane.showMessageDialog(null, "Data berhasil disimpan!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+                    loadData(); 
                     nama_menu.setText("");
                     harga.setText("");
                     kategori.setSelectedIndex(0);
                 } else {
-                    System.out.println("Gagal menyimpan data!");
+                    JOptionPane.showMessageDialog(null, "Gagal menyimpan data!", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         } catch (SQLException e) {
-            System.out.println("SQL Exception: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "ISI DENGAN BENAR: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } catch (NumberFormatException e) {
-            System.out.println("Format harga salah!");
+            JOptionPane.showMessageDialog(null, "Format harga salah!", "Peringatan", JOptionPane.WARNING_MESSAGE);
         }
     } else {
-        System.out.println("Harap isi semua field dengan benar!");
+        JOptionPane.showMessageDialog(null, "Harap isi dengan benar!", "Peringatan", JOptionPane.WARNING_MESSAGE);
     }
     }//GEN-LAST:event_btntambahActionPerformed
 
     private void btneditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneditActionPerformed
-        // TODO add your handling code here:
-        int row = tabel.getSelectedRow();
+int row = tabel.getSelectedRow();
     if (row != -1) {
-        String id = (String) tabel.getValueAt(row, 0);  
-        String nama = nama_menu.getText();
-        String hargaText = harga.getText();
-        String kategoriText = (String) kategori.getSelectedItem();
+        // Ambil ID dari tabel yang dipilih
+        int id = (int) tabel.getValueAt(row, 0);
+        // Ambil data dari tabel yang dipilih untuk dimasukkan ke dalam input fields
+        String nama = (String) tabel.getValueAt(row, 1);
+        String hargaText = String.valueOf(tabel.getValueAt(row, 2));
+        String kategoriText = (String) tabel.getValueAt(row, 3);
 
+        // Set data yang dipilih ke dalam input fields (text fields dan combo box)
+        nama_menu.setText(nama);
+        harga.setText(hargaText);
+        kategori.setSelectedItem(kategoriText);
+
+        // Jika data sudah diperbarui di input, lakukan pengeditan di database
         if (!nama.isEmpty() && !hargaText.isEmpty() && !kategoriText.equals("pilih")) {
             try {
                 double hargaValue = Double.parseDouble(hargaText);
@@ -296,45 +287,31 @@ public class MenuRestaurant extends javax.swing.JInternalFrame {
                     pst.setString(1, nama);
                     pst.setDouble(2, hargaValue);
                     pst.setString(3, kategoriText);
-                    pst.setString(4, id);
-                    
+                    pst.setInt(4, id);
+
                     int rowsAffected = pst.executeUpdate();
-                    
+
                     if (rowsAffected > 0) {
-                        System.out.println("Data berhasil diedit!");
-                        loadData();  
-                        model.setValueAt(nama, row, 1);
-                        model.setValueAt(hargaValue, row, 2);
-                        model.setValueAt(kategoriText, row, 3);
-                        
-                        nama_id.setText("");
-                        nama_menu.setText("");
-                        harga.setText("");
-                        kategori.setSelectedIndex(0);
+                        loadData();  // Memuat data setelah edit
+                        JOptionPane.showMessageDialog(null, "Data berhasil diedit!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
                     } else {
-                        System.out.println("Gagal mengedit data!");
+                        JOptionPane.showMessageDialog(null, "Gagal mengedit data!", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             } catch (SQLException e) {
-                System.out.println("SQL Exception: " + e.getMessage());
+                JOptionPane.showMessageDialog(null, "ISI DENGAN BENAR: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             } catch (NumberFormatException e) {
-                System.out.println("Format harga salah!");
+                JOptionPane.showMessageDialog(null, "Format harga salah!", "Peringatan", JOptionPane.WARNING_MESSAGE);
             }
         } else {
-            System.out.println("Harap isi semua field dengan benar!");
+            JOptionPane.showMessageDialog(null, "Harap isi dengan benar!", "Peringatan", JOptionPane.WARNING_MESSAGE);
         }
-    } else {
-        System.out.println("Pilih baris yang ingin diedit!");
     }
     }//GEN-LAST:event_btneditActionPerformed
 
     private void kategoriActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_kategoriActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_kategoriActionPerformed
-
-    private void nama_idActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nama_idActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_nama_idActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnedit;
@@ -343,11 +320,9 @@ public class MenuRestaurant extends javax.swing.JInternalFrame {
     private javax.swing.JTextField harga;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JComboBox<String> kategori;
-    private javax.swing.JTextField nama_id;
     private javax.swing.JTextField nama_menu;
     private javax.swing.JTable tabel;
     // End of variables declaration//GEN-END:variables
